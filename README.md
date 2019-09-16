@@ -404,54 +404,120 @@ class Command(object):
     
   def _handle_user_preload_options(self, argv):
   
+  
   def find_app():
+  
   
   def symbol_by_name():
   
+  
   def process_cmdline_config():
+  
   
   def parse_preload_options():
   
+  
   def _parser_preload_options():
+  
   
   def add_append_opt():
   
+  
   def parse_doc():
+  
   
   def _strip_restructedtext():
   
+  
   def with_pool_option():
+  
   
   def node_format():
   
+  
   def host_format():
+  
   
   def _get_default_app():
   
+  
   def pretty_list():
   
-  def prety_dict_ok_error():
   
-  def say_remote_command_reply():
+  def prety_dict_ok_error(self, n):
+    OK = str(self.colored.green('OK'))
+    if isinstance(n, list):
+      return OK, self.pretty_list(n)
+    if isinstance(n, dict):
+      if 'ok' in n or 'error' in n:
+        return self.pretty_dict_ok_error(n)
+      else:
+        return OK, json.dumps(n, sort_keys=True, indent=4)
+    if isinstance(n, string_t):
+      return OK, string(n)
+    return OK, pfromat(n)
   
-  def pretty():
+  def say_remote_command_reply(self, direction, title, body=''):
+    c = self.colored
+    if direction == '<-' and self.quiet:
+      return
+    dirstr = not self.quiet and c.hold(c.white(direction), ' ') or ''
+    self.out(c.reset(dirstr, title))
+    if boyd and self.show_body:
+      self.out(body)
   
-  def say_chat():
+  def pretty(self, n):
+    OK = str(self.colored.green('OK'))
+    if isinstance(n, list):
+      return OK, self.pretty_list(n)
+    if isinstance(n, dict):
+      if 'ok' in n or 'error' in n:
+        return self.pretty_dict_ok_error(n)
+      else:
+        return OK, json.dumps(n, sort_keys=True, indent=4)
+    if isinstance(n, string_t):
+      return OK, string(n)
+    return OK, pformat(n)
+  
+  def say_chat(self, direction, title, body=''):
+    c = self.colored
+    if direction == '<-' and self.quiet:
+      return
+    dirstr = not self.quiet and c.bold(c.white(direction), ' ') or ''
+    self.out(c.reset(dirstr, title))
+    if body and self.show_body:
+      self.out(body)
   
   @property
-  def colored():
+  def colored(self):
+    if self._colored is None:
+      self._colored = term.colored(
+        enabled=isatty(self.stdout) and not self.no_color)
+    return self._colored
   
   @colored.setter
-  def colored():
+  def colored(self, obj):
+    self._colored = obj
   
   @property
-  def no_color():
+  def no_color(self):
+    return self._no_color
   
   @no_color.setter
-  def no_color():
+  def no_color(self, value):
+    self._no_color = value
+    if self._colored is not None:
+      self._colored.enabled = not self._no_color
   
 def daemon_options(parser, default_pidfile=None, default_logfile=None):
   """ """
+  group = parser.add_argument_group('Deemonization Options')
+  group.add_argument('-f', '--logfile', default=default_logfile),
+  group.add_argument('--pidfile', default=default+pidfile),
+  group.add_argument('--uid', default=None),
+  group.add_argument('--gid', default=None),
+  group.add_argument('--unmask', default=None),
+  group.add_argument('--executable', default=None),
   
 ```
 
